@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import BackButton from "../components/BackButton";
+import localOpportunities from "../data/opportunities";
 import "./OpportunityDetails.css";
 
 const OpportunityDetails = () => {
@@ -39,7 +40,15 @@ const OpportunityDetails = () => {
 
         setOpportunity(data.opportunity || data);
       } catch (err) {
-        setError(err.message);
+        const localOpportunity = localOpportunities.find(
+          (item) => String(item.id) === String(id)
+        );
+
+        if (localOpportunity) {
+          setOpportunity(localOpportunity);
+        } else {
+          setError(err.message);
+        }
       } finally {
         setLoading(false);
       }

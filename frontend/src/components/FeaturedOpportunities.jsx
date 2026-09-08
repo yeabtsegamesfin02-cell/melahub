@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import localOpportunities from "../data/opportunities";
 
 function FeaturedOpportunities() {
   const [opportunities, setOpportunities] = useState([]);
@@ -14,13 +15,12 @@ function FeaturedOpportunities() {
 
         const data = await response.json();
 
-        if (response.ok) {
-          setOpportunities(
-            (data.opportunities || []).slice(0, 6)
-          );
-        }
+        if (!response.ok) throw new Error("Opportunity API unavailable");
+
+        setOpportunities((data.opportunities || []).slice(0, 6));
       } catch (error) {
-        console.error("Failed to load opportunities:", error);
+        console.warn("Using local opportunity catalog:", error.message);
+        setOpportunities(localOpportunities.slice(0, 6));
       } finally {
         setLoading(false);
       }

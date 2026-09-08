@@ -687,6 +687,90 @@ const opportunities = [
     applicationUrl: "",
     isActive: true,
   },
+
+  {
+    title: "Product Design Fellowship",
+    description:
+      "A hands-on fellowship for emerging designers working on useful digital products for African markets.",
+    category: "Fellowships",
+    location: "Addis Ababa / Hybrid",
+    skills: ["Figma", "Research", "Prototyping"],
+    interests: ["design", "technology", "product"],
+    organization: "Nile Product Studio",
+    deadline: new Date("2027-01-18"),
+    applicationUrl: "",
+    isActive: true,
+  },
+
+  {
+    title: "Women Founder Growth Fund",
+    description:
+      "Non-dilutive funding, mentorship, and peer support for women building early-stage businesses.",
+    category: "Grants & Funding",
+    location: "Ethiopia / Online",
+    skills: ["Business", "Leadership", "Finance"],
+    interests: ["women", "entrepreneurship", "business"],
+    organization: "SheBuild Africa",
+    deadline: new Date("2027-02-04"),
+    applicationUrl: "",
+    isActive: true,
+  },
+
+  {
+    title: "Community Health Coordinator",
+    description:
+      "Coordinate local health education projects and help connect families with essential services.",
+    category: "Jobs & Careers",
+    location: "Hawassa",
+    skills: ["Outreach", "Amharic", "Coordination"],
+    interests: ["health", "community", "social impact"],
+    organization: "Wellbeing Ethiopia",
+    deadline: new Date("2027-01-30"),
+    applicationUrl: "",
+    isActive: true,
+  },
+
+  {
+    title: "Data Analytics Bootcamp",
+    description:
+      "Learn spreadsheets, SQL, and data storytelling through practical projects and mentor feedback.",
+    category: "Training & Courses",
+    location: "Online / Ethiopia",
+    skills: ["SQL", "Excel", "Data"],
+    interests: ["technology", "analytics", "education"],
+    organization: "Open Data Addis",
+    deadline: new Date("2027-02-12"),
+    applicationUrl: "",
+    isActive: true,
+  },
+
+  {
+    title: "Climate-Smart Farming Challenge",
+    description:
+      "Pitch a practical idea that helps farmers adapt to climate change and build resilient livelihoods.",
+    category: "Competitions",
+    location: "Nationwide / Ethiopia",
+    skills: ["Agriculture", "Climate", "Presentation"],
+    interests: ["farming", "climate", "innovation"],
+    organization: "Green Soil Network",
+    deadline: new Date("2027-03-01"),
+    applicationUrl: "",
+    isActive: true,
+  },
+
+  {
+    title: "Digital Rights Research Internship",
+    description:
+      "Support research on privacy, access, and inclusive digital services across East Africa.",
+    category: "Internships",
+    location: "Remote / Ethiopia",
+    skills: ["Research", "Writing", "Digital Rights"],
+    interests: ["technology", "research", "civic technology"],
+    organization: "Civic Signals Lab",
+    deadline: new Date("2027-02-20"),
+    applicationUrl: "",
+    isActive: true,
+  },
 ];
 
 const seedDatabase = async () => {

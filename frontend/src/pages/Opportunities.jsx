@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import BackButton from "../components/BackButton";
+import localOpportunities from "../data/opportunities";
 import "./Opportunities.css";
 
 const Opportunities = () => {
@@ -8,7 +9,9 @@ const Opportunities = () => {
 
   const [opportunities, setOpportunities] = useState([]);
   const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("All");
+  const [category, setCategory] = useState(
+    () => searchParams.get("category") || "All"
+  );
   const [sort, setSort] = useState("latest");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -17,15 +20,7 @@ const Opportunities = () => {
     fetchOpportunities();
   }, []);
 
-  useEffect(() => {
-    const urlCategory = searchParams.get("category");
-
-    if (urlCategory) {
-      setCategory(urlCategory);
-    }
-  }, [searchParams]);
-
-  const fetchOpportunities = async () => {
+  async function fetchOpportunities() {
     try {
       setLoading(true);
       setError("");
@@ -42,9 +37,10 @@ const Opportunities = () => {
         );
       }
 
-      setOpportunities(data.opportunities || []);
-    } catch (err) {
-      setError(err.message);
+      setOpportunities(data.opportunities?.length ? data.opportunities : localOpportunities);
+    } catch {
+      setError("");
+      setOpportunities(localOpportunities);
     } finally {
       setLoading(false);
     }
@@ -278,7 +274,7 @@ const Opportunities = () => {
             {filteredOpportunities.map((item) => (
               <article
                 className="opportunity-card"
-                key={item._id}
+                key={item._id || item.id}
               >
                 <div className="card-top">
                   <div className="opportunity-avatar">
@@ -320,7 +316,7 @@ const Opportunities = () => {
                 </div>
 
                 <Link
-                  to={`/opportunities/${item._id}`}
+                  to={`/opportunities/${item._id || item.id}`}
                   className="view-opportunity"
                 >
                   View Opportunity
