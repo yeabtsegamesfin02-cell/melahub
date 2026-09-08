@@ -1,0 +1,593 @@
+/* =========================================================
+   MELAHUB LOGIN PAGE
+   ========================================================= */
+
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  background: #ffffff;
+}
+
+/* =========================================================
+   LEFT SHOWCASE
+   ========================================================= */
+
+.auth-showcase {
+  position: relative;
+  width: 50%;
+  min-height: 100vh;
+  overflow: hidden;
+  background:
+    linear-gradient(135deg, #111827, #1f2937 50%, #f59e0b);
+}
+
+.showcase-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      circle at 20% 20%,
+      rgba(245, 158, 11, 0.35),
+      transparent 35%
+    ),
+    radial-gradient(
+      circle at 90% 80%,
+      rgba(255, 255, 255, 0.12),
+      transparent 30%
+    );
+}
+
+.showcase-content {
+  position: relative;
+  z-index: 2;
+  min-height: 100vh;
+  padding: 45px 55px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: white;
+}
+
+.auth-logo {
+  width: fit-content;
+  text-decoration: none;
+  font-size: 30px;
+  font-weight: 900;
+  letter-spacing: -1.5px;
+  color: #ffffff;
+}
+
+.auth-logo span {
+  color: #f59e0b;
+}
+
+.showcase-text {
+  max-width: 580px;
+}
+
+.showcase-badge {
+  display: inline-flex;
+  padding: 9px 15px;
+  border-radius: 50px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(10px);
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 25px;
+}
+
+.showcase-text h1 {
+  margin: 0 0 20px;
+  font-size: clamp(42px, 4.2vw, 64px);
+  line-height: 1.05;
+  letter-spacing: -2.5px;
+}
+
+.showcase-text h1 span {
+  color: #f59e0b;
+}
+
+.showcase-text > p {
+  max-width: 520px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+.showcase-points {
+  margin-top: 35px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.showcase-point {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.showcase-point span {
+  width: 27px;
+  height: 27px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #f59e0b;
+  color: #111827;
+  font-weight: 900;
+}
+
+.showcase-point p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 14px;
+}
+
+.showcase-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 12px;
+}
+
+
+/* =========================================================
+   RIGHT FORM SECTION
+   ========================================================= */
+
+.auth-form-section {
+  width: 50%;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 50px;
+  background: #ffffff;
+}
+
+.auth-form-wrapper {
+  width: 100%;
+  max-width: 470px;
+}
+
+.mobile-logo {
+  display: none;
+}
+
+.auth-heading {
+  margin-bottom: 30px;
+}
+
+.welcome-text {
+  display: block;
+  margin-bottom: 10px;
+  color: #f59e0b;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+}
+
+.auth-heading h2 {
+  margin: 0 0 10px;
+  color: #111827;
+  font-size: 36px;
+  line-height: 1.15;
+  letter-spacing: -1px;
+}
+
+.auth-heading p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.auth-heading a {
+  color: #f59e0b;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.auth-heading a:hover {
+  text-decoration: underline;
+}
+
+
+/* =========================================================
+   FORM
+   ========================================================= */
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 21px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label,
+.label-row label {
+  color: #374151;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.forgot-link {
+  border: none;
+  padding: 0;
+  background: none;
+  color: #f59e0b;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.forgot-link:hover {
+  text-decoration: underline;
+}
+
+.input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.input-wrapper input {
+  width: 100%;
+  height: 55px;
+  padding: 0 48px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 12px;
+  outline: none;
+  background: #f9fafb;
+  color: #111827;
+  font-size: 14px;
+  transition: 0.25s ease;
+}
+
+.input-wrapper input::placeholder {
+  color: #9ca3af;
+}
+
+.input-wrapper input:focus {
+  border-color: #f59e0b;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.1);
+}
+
+.input-icon {
+  position: absolute;
+  z-index: 2;
+  left: 17px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+  font-size: 16px;
+}
+
+.password-toggle {
+  position: absolute;
+  z-index: 2;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 17px;
+  padding: 5px;
+}
+
+.input-error input {
+  border-color: #ef4444;
+}
+
+.error-message {
+  color: #ef4444;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   REMEMBER ME
+   ========================================================= */
+
+.remember-row {
+  margin-top: -4px;
+}
+
+.checkbox-label {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: #6b7280;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.checkbox-label input {
+  position: absolute;
+  opacity: 0;
+}
+
+.custom-checkbox {
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid #d1d5db;
+  border-radius: 5px;
+  background: #ffffff;
+  transition: 0.2s ease;
+}
+
+.checkbox-label input:checked + .custom-checkbox {
+  border-color: #f59e0b;
+  background: #f59e0b;
+  box-shadow: inset 0 0 0 4px #ffffff;
+}
+
+
+/* =========================================================
+   MESSAGE
+   ========================================================= */
+
+.auth-message {
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #047857;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   SUBMIT BUTTON
+   ========================================================= */
+
+.auth-submit {
+  width: 100%;
+  height: 55px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  border: none;
+  border-radius: 12px;
+  background: #f59e0b;
+  color: #111827;
+  font-size: 15px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: 0.25s ease;
+  box-shadow: 0 10px 25px rgba(245, 158, 11, 0.2);
+}
+
+.auth-submit span {
+  font-size: 20px;
+  transition: 0.2s ease;
+}
+
+.auth-submit:hover {
+  transform: translateY(-2px);
+  background: #fbbf24;
+  box-shadow: 0 14px 30px rgba(245, 158, 11, 0.28);
+}
+
+.auth-submit:hover span {
+  transform: translateX(4px);
+}
+
+.auth-submit:active {
+  transform: translateY(0);
+}
+
+
+/* =========================================================
+   DIVIDER
+   ========================================================= */
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin: 28px 0 20px;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: "";
+  height: 1px;
+  flex: 1;
+  background: #e5e7eb;
+}
+
+.auth-divider span {
+  color: #9ca3af;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+
+/* =========================================================
+   SOCIAL LOGIN
+   ========================================================= */
+
+.social-login {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+.social-button {
+  width: 100%;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 11px;
+  background: #ffffff;
+  color: #374151;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.social-button:hover {
+  border-color: #d1d5db;
+  background: #f9fafb;
+  transform: translateY(-1px);
+}
+
+.google-icon,
+.facebook-icon {
+  font-weight: 900;
+  font-size: 17px;
+}
+
+.google-icon {
+  color: #db4437;
+}
+
+.facebook-icon {
+  color: #1877f2;
+}
+
+.security-note {
+  margin: 22px 0 0;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 11px;
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1000px) {
+  .auth-showcase {
+    width: 45%;
+  }
+
+  .auth-form-section {
+    width: 55%;
+    padding: 35px;
+  }
+
+  .showcase-content {
+    padding: 35px;
+  }
+
+  .showcase-text h1 {
+    font-size: 42px;
+  }
+
+  .showcase-footer span:last-child {
+    display: none;
+  }
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 768px) {
+  .auth-page {
+    min-height: 100vh;
+    display: block;
+  }
+
+  .auth-showcase {
+    display: none;
+  }
+
+  .auth-form-section {
+    width: 100%;
+    min-height: 100vh;
+    padding: 35px 20px;
+    align-items: flex-start;
+  }
+
+  .auth-form-wrapper {
+    max-width: 520px;
+    margin: 0 auto;
+  }
+
+  .mobile-logo {
+    display: block;
+    margin-bottom: 55px;
+  }
+
+  .mobile-logo .auth-logo {
+    color: #111827;
+    font-size: 27px;
+  }
+
+  .auth-heading h2 {
+    font-size: 31px;
+  }
+}
+
+
+/* =========================================================
+   SMALL PHONES
+   ========================================================= */
+
+@media (max-width: 480px) {
+  .auth-form-section {
+    padding: 25px 17px;
+  }
+
+  .mobile-logo {
+    margin-bottom: 40px;
+  }
+
+  .auth-heading {
+    margin-bottom: 25px;
+  }
+
+  .auth-heading h2 {
+    font-size: 28px;
+  }
+
+  .label-row {
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .forgot-link {
+    white-space: nowrap;
+  }
+
+  .input-wrapper input {
+    height: 52px;
+  }
+
+  .auth-submit {
+    height: 52px;
+  }
+
+  .social-button {
+    height: 48px;
+  }
+}

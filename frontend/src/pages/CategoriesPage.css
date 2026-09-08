@@ -1,0 +1,135 @@
+.categories-page {
+  min-height: 100vh;
+  background: #f8fafc;
+}
+
+.categories-container {
+  width: 100%;
+  max-width: 1150px;
+  margin: 0 auto;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+.categories-hero {
+  padding: 140px 0 70px;
+  background: white;
+  text-align: center;
+}
+
+.categories-hero h1 {
+  margin: 15px 0;
+  color: #111827;
+  font-size: 46px;
+}
+
+.categories-hero p {
+  margin: 0 auto;
+  max-width: 600px;
+  color: #6b7280;
+  font-size: 18px;
+  line-height: 1.7;
+}
+
+.categories-list {
+  padding: 60px 0 90px;
+}
+
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+
+.category-page-card {
+  display: flex;
+  gap: 20px;
+  padding: 28px;
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  background: white;
+  text-decoration: none;
+  transition: 0.2s;
+}
+
+.category-page-card:hover {
+  transform: translateY(-5px);
+  border-color: #f59e0b;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+}
+
+.category-page-icon {
+  width: 60px;
+  height: 60px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  background: #fff7ed;
+  font-size: 30px;
+}
+
+.category-page-content {
+  flex: 1;
+}
+
+.category-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.category-title-row h2 {
+  margin: 0;
+  color: #111827;
+  font-size: 20px;
+}
+
+.category-count {
+  color: #f59e0b;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.category-page-content p {
+  margin: 9px 0 18px;
+  color: #6b7280;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.category-explore {
+  color: #f59e0b;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+@media (max-width: 900px) {
+  .categories-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .categories-hero h1 {
+    font-size: 38px;
+  }
+}
+
+@media (max-width: 600px) {
+  .categories-hero {
+    padding: 110px 0 50px;
+  }
+
+  .categories-hero h1 {
+    font-size: 31px;
+  }
+
+  .categories-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .category-page-card {
+    padding: 22px;
+  }
+}

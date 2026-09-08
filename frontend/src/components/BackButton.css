@@ -1,0 +1,33 @@
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 42px;
+  padding: 0 14px;
+  border: 1px solid var(--line, #dfe7df);
+  border-radius: 12px;
+  background: var(--surface, #ffffff);
+  color: var(--ink, #17332e);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(23, 51, 46, 0.06);
+}
+
+.back-button span {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.back-button:hover {
+  border-color: var(--accent, #f2bf55);
+  background: var(--accent-soft, #fff4d6);
+  transform: translateX(-2px);
+}
+
+body.dark-mode .back-button {
+  background: var(--surface, #162b27);
+  color: var(--ink, #eef7f1);
+  border-color: var(--line, #2b4942);
+}
