@@ -406,6 +406,89 @@ body.dark-mode .theme-btn {
   background: var(--surface);
 }
 
+body.dark-mode {
+  --melahub-orange-soft: #291d12;
+  --melahub-surface: #162b27;
+  --melahub-text: #eef7f1;
+  --melahub-muted: #aac0b8;
+  --melahub-line: #2b4942;
+  --admin-page: #10211e;
+  --admin-surface: #162b27;
+  --admin-text: #eef7f1;
+}
+
+body.dark-mode .businesses-page,
+body.dark-mode .categories-page,
+body.dark-mode .profile-page,
+body.dark-mode .dashboard-page,
+body.dark-mode .opportunities-page,
+body.dark-mode .details-page,
+body.dark-mode .auth-page,
+body.dark-mode .signup-page {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+body.dark-mode .businesses-content,
+body.dark-mode .business-card,
+body.dark-mode .category-card,
+body.dark-mode .details-card,
+body.dark-mode .apply-modal,
+body.dark-mode .signup-card,
+body.dark-mode .auth-form-section,
+body.dark-mode .dashboard-card,
+body.dark-mode .profile-card {
+  background: var(--surface);
+  color: var(--ink);
+  border-color: var(--line);
+}
+
+body.dark-mode .businesses-content h2,
+body.dark-mode .business-card h3,
+body.dark-mode .category-card h2,
+body.dark-mode .details-card h1,
+body.dark-mode .details-card h2,
+body.dark-mode .signup-card h1,
+body.dark-mode .dashboard-card h2,
+body.dark-mode .profile-card h2 {
+  color: var(--ink);
+}
+
+body.dark-mode .businesses-content p,
+body.dark-mode .business-card p,
+body.dark-mode .category-card p,
+body.dark-mode .details-description,
+body.dark-mode .details-info span,
+body.dark-mode .signup-header p,
+body.dark-mode .dashboard-card p,
+body.dark-mode .profile-card p {
+  color: var(--muted-ink);
+}
+
+body.dark-mode .businesses-search,
+body.dark-mode .businesses-content select,
+body.dark-mode .signup-group input,
+body.dark-mode .auth-form input,
+body.dark-mode .details-info > div {
+  background: #10211e;
+  color: var(--ink);
+  border-color: var(--line);
+}
+
+body.dark-mode .admin-page {
+  background: var(--admin-page);
+  color: var(--admin-text);
+}
+
+body.dark-mode .admin-table,
+body.dark-mode .admin-panel,
+body.dark-mode .admin-stat-card,
+body.dark-mode .admin-content-card {
+  background: var(--admin-surface);
+  color: var(--admin-text);
+  border-color: var(--line);
+}
+
 /* Smooth whole website transition */
 body,
 .navbar,

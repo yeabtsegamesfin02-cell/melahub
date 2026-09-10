@@ -266,30 +266,6 @@ function Profile() {
   const skillCount = profile.skills.length;
 
   // =====================================
-  // LOADING
-  // =====================================
-
-  if (loading) {
-    return (
-      <>
-        <Navbar />
-
-        <main className="profile-page">
-          <div className="profile-container">
-            <div className="profile-loading">
-              <div className="loading-spinner"></div>
-              <h2>Loading your profile...</h2>
-              <p>Connecting to MelaHub.</p>
-            </div>
-          </div>
-        </main>
-
-        <Footer />
-      </>
-    );
-  }
-
-  // =====================================
   // PAGE
   // =====================================
 
@@ -301,6 +277,13 @@ function Profile() {
         <div className="profile-container">
 
           <BackButton />
+
+          {loading && (
+            <div className="profile-loading profile-loading-inline">
+              <div className="loading-spinner"></div>
+              <span>Updating your profile...</span>
+            </div>
+          )}
 
           {/* HEADER */}
           <div className="profile-header">

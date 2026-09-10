@@ -1,6 +1,7 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "./context/AuthContext";
-import ProtectedRoute from "./components/ProtectedRoute";
+import { useEffect } from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+
+import { AuthProvider, useAuth } from "./context/AuthContext";
 
 import Home from "./pages/Home";
 import Opportunities from "./pages/Opportunities";
@@ -10,59 +11,134 @@ import Signup from "./pages/Signup";
 import Profile from "./pages/Profile";
 import Dashboard from "./pages/Dashboard";
 import OpportunityDetails from "./pages/OpportunityDetails";
+import Admin from "./pages/Admin";
+import Businesses from "./pages/Businesses";
 
-import "./App.css";
+function ThemeSync() {
+  useEffect(() => {
+    const darkMode = localStorage.getItem("melahubDarkMode") === "true";
+    document.body.classList.toggle("dark-mode", darkMode);
+  }, []);
 
-function App() {
+  return null;
+}
+
+function ProtectedRoute({ children }) {
+  const { isLoggedIn } = useAuth();
+
+  if (!isLoggedIn) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+}
+
+function AdminRoute({ children }) {
+  const { isLoggedIn, isAdmin } = useAuth();
+
+  if (!isLoggedIn) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (!isAdmin) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return children;
+}
+
+function AppRoutes() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Routes>
+    <Routes>
+      {/* =========================
+          PUBLIC PAGES
+      ========================= */}
+      <Route path="/" element={<Home />} />
 
-          {/* Home */}
-          <Route path="/" element={<Home />} />
+      <Route
+        path="/opportunities"
+        element={<Opportunities />}
+      />
 
-          {/* Opportunities */}
-          <Route path="/opportunities" element={<Opportunities />} />
+      <Route
+        path="/opportunities/:id"
+        element={<OpportunityDetails />}
+      />
 
-          {/* Categories */}
-          <Route path="/categories" element={<CategoriesPage />} />
+      <Route
+        path="/categories"
+        element={<CategoriesPage />}
+      />
 
-          {/* Authentication */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Signup />} />
-          <Route path="/signup" element={<Signup />} />
+      <Route
+        path="/businesses"
+        element={<Businesses />}
+      />
 
-          {/* Protected Profile */}
-          <Route
-            path="/profile"
-            element={
-              <ProtectedRoute>
-                <Profile />
-              </ProtectedRoute>
-            }
-          />
+      {/* =========================
+          AUTH PAGES
+      ========================= */}
+      <Route
+        path="/login"
+        element={<Login />}
+      />
 
-          {/* Protected Dashboard */}
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
+      <Route
+        path="/signup"
+        element={<Signup />}
+      />
 
-          {/* Opportunity Details */}
-          <Route
-            path="/opportunities/:id"
-            element={<OpportunityDetails />}
-          />
+      {/* =========================
+          USER PAGES
+      ========================= */}
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        }
+      />
 
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* =========================
+          ADMIN PAGE
+      ========================= */}
+      <Route
+        path="/admin"
+        element={
+          <AdminRoute>
+            <Admin />
+          </AdminRoute>
+        }
+      />
+
+      {/* =========================
+          FALLBACK
+      ========================= */}
+      <Route
+        path="*"
+        element={<Navigate to="/" replace />}
+      />
+    </Routes>
   );
 }
 
-export default App;
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <ThemeSync />
+        <AppRoutes />
+      </AuthProvider>
+    </BrowserRouter>
+  );
+}

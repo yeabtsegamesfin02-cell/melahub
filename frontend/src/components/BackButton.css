@@ -26,6 +26,18 @@
   transform: translateX(-2px);
 }
 
+.auth-page > .back-button,
+.signup-page > .back-button {
+  position: fixed;
+  top: 88px;
+  left: 24px;
+  z-index: 1100;
+}
+
+.admin-back-row {
+  margin-bottom: 18px;
+}
+
 body.dark-mode .back-button {
   background: var(--surface, #162b27);
   color: var(--ink, #eef7f1);

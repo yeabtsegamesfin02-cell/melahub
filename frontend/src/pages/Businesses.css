@@ -1,0 +1,275 @@
+.businesses-page {
+  min-height: 100vh;
+  background: #f7f9fc;
+  color: #111827;
+}
+
+.businesses-hero {
+  padding: 90px 20px 75px;
+  background: linear-gradient(135deg, #0f172a, #172554);
+  color: white;
+}
+
+.businesses-hero-content {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.businesses-badge {
+  display: inline-block;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  font-size: 14px;
+  margin-bottom: 22px;
+}
+
+.businesses-hero h1 {
+  max-width: 800px;
+  margin: 0;
+  font-size: clamp(38px, 6vw, 68px);
+  line-height: 1.05;
+  letter-spacing: -2px;
+}
+
+.businesses-hero h1 span {
+  display: block;
+  color: #60a5fa;
+}
+
+.businesses-hero p {
+  max-width: 650px;
+  margin: 22px 0 30px;
+  color: #cbd5e1;
+  font-size: 18px;
+  line-height: 1.7;
+}
+
+.businesses-search {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 700px;
+  padding: 6px 18px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+}
+
+.businesses-search span {
+  font-size: 20px;
+}
+
+.businesses-search input {
+  width: 100%;
+  border: none;
+  outline: none;
+  padding: 15px 5px;
+  font-size: 16px;
+  color: #111827;
+}
+
+.businesses-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 55px 20px 80px;
+}
+
+.businesses-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.businesses-toolbar h2 {
+  margin: 0 0 6px;
+  font-size: 28px;
+}
+
+.businesses-toolbar p {
+  margin: 0;
+  color: #64748b;
+}
+
+.businesses-toolbar select {
+  min-width: 180px;
+  padding: 12px 15px;
+  border: 1px solid #dbe2ea;
+  border-radius: 10px;
+  background: white;
+  outline: none;
+  font-size: 14px;
+}
+
+.businesses-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.business-card {
+  overflow: hidden;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(15, 23, 42, 0.06);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.business-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
+}
+
+.business-image {
+  position: relative;
+  height: 190px;
+  overflow: hidden;
+  background: #e2e8f0;
+}
+
+.business-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.business-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-size: 60px;
+}
+
+.business-category {
+  position: absolute;
+  left: 14px;
+  bottom: 14px;
+  padding: 7px 11px;
+  border-radius: 999px;
+  background: white;
+  color: #1e3a8a;
+  font-size: 12px;
+  font-weight: 700;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.12);
+}
+
+.business-card-body {
+  padding: 22px;
+}
+
+.business-card-body h3 {
+  margin: 0 0 9px;
+  font-size: 21px;
+}
+
+.business-location {
+  margin-bottom: 13px;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.business-card-body p {
+  margin: 0 0 20px;
+  color: #64748b;
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+.business-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.business-actions a {
+  padding: 9px 12px;
+  border-radius: 9px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.business-actions a:hover {
+  background: #dbeafe;
+}
+
+.businesses-state {
+  padding: 70px 20px;
+  text-align: center;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+}
+
+.businesses-state h3 {
+  margin: 15px 0 8px;
+}
+
+.businesses-state p {
+  margin: 0;
+  color: #64748b;
+}
+
+.state-icon {
+  font-size: 45px;
+}
+
+.business-spinner {
+  width: 38px;
+  height: 38px;
+  margin: 0 auto;
+  border: 4px solid #dbeafe;
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  animation: business-spin 0.8s linear infinite;
+}
+
+@keyframes business-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.error-state {
+  border-color: #fecaca;
+}
+
+@media (max-width: 900px) {
+  .businesses-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 650px) {
+  .businesses-hero {
+    padding: 65px 18px 55px;
+  }
+
+  .businesses-content {
+    padding: 40px 16px 60px;
+  }
+
+  .businesses-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .businesses-toolbar select {
+    width: 100%;
+  }
+
+  .businesses-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .businesses-hero h1 {
+    letter-spacing: -1px;
+  }
+}

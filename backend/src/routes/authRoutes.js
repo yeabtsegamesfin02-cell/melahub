@@ -6,7 +6,7 @@ const { User } = require("../db");
 const router = express.Router();
 
 // =====================================
-// REGISTER
+// REGISTER USER
 // POST /api/auth/register
 // =====================================
 
@@ -23,6 +23,13 @@ router.post("/register", async (req, res) => {
 
     const cleanName = name.trim();
     const cleanEmail = email.trim().toLowerCase();
+
+    if (cleanName.length < 2) {
+      return res.status(400).json({
+        success: false,
+        message: "Name must be at least 2 characters.",
+      });
+    }
 
     if (password.length < 6) {
       return res.status(400).json({
@@ -44,6 +51,8 @@ router.post("/register", async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Public registration ALWAYS creates a normal user.
+    // Nobody can create an admin account through this endpoint.
     const user = await User.create({
       name: cleanName,
       email: cleanEmail,
@@ -51,7 +60,7 @@ router.post("/register", async (req, res) => {
       role: "user",
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       message: "User registered successfully.",
       user: {
@@ -64,7 +73,7 @@ router.post("/register", async (req, res) => {
   } catch (error) {
     console.error("Registration error:", error);
 
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Registration failed.",
     });
@@ -112,9 +121,21 @@ router.post("/login", async (req, res) => {
       });
     }
 
+    if (!process.env.JWT_SECRET) {
+      console.error("JWT_SECRET is missing from .env");
+
+      return res.status(500).json({
+        success: false,
+        message: "Server configuration error.",
+      });
+    }
+
+    // Include role inside JWT.
+    // This is what allows protected admin routes
+    // to know whether the logged-in account is an admin.
     const token = jwt.sign(
       {
-        id: user._id,
+        id: user._id.toString(),
         email: user.email,
         role: user.role,
       },
@@ -124,7 +145,7 @@ router.post("/login", async (req, res) => {
       }
     );
 
-    res.json({
+    return res.json({
       success: true,
       message: "Login successful!",
       token,
@@ -138,7 +159,7 @@ router.post("/login", async (req, res) => {
   } catch (error) {
     console.error("Login error:", error);
 
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Login failed.",
     });

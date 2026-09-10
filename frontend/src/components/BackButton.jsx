@@ -1,11 +1,12 @@
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import "./BackButton.css";
 
 function BackButton({ fallback = "/" }) {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleBack = () => {
-    if (window.history.length > 1) {
+    if (location.key !== "default") {
       navigate(-1);
       return;
     }

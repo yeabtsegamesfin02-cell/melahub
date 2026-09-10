@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { api } from "../services/api";
+import BackButton from "../components/BackButton";
 import "./Login.css";
 
 function Login() {
@@ -74,15 +75,20 @@ function Login() {
         throw new Error("Login succeeded but no token was returned.");
       }
 
-      localStorage.setItem("melahubToken", data.token);
-
-      if (data.user) {
-        localStorage.setItem(
-          "melahubUser",
-          JSON.stringify(data.user)
-        );
+      if (!data.user) {
+        throw new Error("Login succeeded but no user information was returned.");
       }
 
+      // Save authentication token
+      localStorage.setItem("melahubToken", data.token);
+
+      // Save complete user information, including role
+      localStorage.setItem(
+        "melahubUser",
+        JSON.stringify(data.user)
+      );
+
+      // Remember email
       if (rememberMe) {
         localStorage.setItem(
           "melahubRememberEmail",
@@ -92,13 +98,20 @@ function Login() {
         localStorage.removeItem("melahubRememberEmail");
       }
 
+      // Update AuthContext
       login(data.user);
 
       setMessage("Login successful! Welcome back to MelaHub.");
 
+      // Admin goes to Admin Dashboard
+      // Normal user goes to normal Dashboard
       setTimeout(() => {
-        navigate("/dashboard");
-      }, 1000);
+        if (data.user.role === "admin") {
+          navigate("/admin");
+        } else {
+          navigate("/dashboard");
+        }
+      }, 700);
     } catch (error) {
       console.error("Login error:", error);
 
@@ -111,6 +124,8 @@ function Login() {
 
   return (
     <div className="auth-page">
+      <BackButton />
+
       <div className="auth-showcase">
         <div className="showcase-overlay"></div>
 
@@ -162,7 +177,6 @@ function Login() {
 
       <div className="auth-form-section">
         <div className="auth-form-wrapper">
-
           <div className="mobile-logo">
             <Link to="/" className="auth-logo">
               Mela<span>Hub</span>
@@ -188,16 +202,15 @@ function Login() {
             className="auth-form"
             onSubmit={handleSubmit}
           >
-
             <div className="form-group">
               <label htmlFor="email">
                 Email address
               </label>
 
               <div
-                className={`input-wrapper ${
-                  errors.email ? "input-error" : ""
-                }`}
+                className={
+                  errors.email ? "input-wrapper input-error" : "input-wrapper"
+                }
               >
                 <span className="input-icon">
                   ✉
@@ -241,9 +254,9 @@ function Login() {
               </div>
 
               <div
-                className={`input-wrapper ${
-                  errors.password ? "input-error" : ""
-                }`}
+                className={
+                  errors.password ? "input-wrapper input-error" : "input-wrapper"
+                }
               >
                 <span className="input-icon">
                   🔒
@@ -318,7 +331,6 @@ function Login() {
           </div>
 
           <div className="social-login">
-
             <button
               type="button"
               className="social-button"
@@ -350,13 +362,11 @@ function Login() {
 
               Continue with Facebook
             </button>
-
           </div>
 
           <p className="security-note">
             🔐 Your information is securely handled by MelaHub.
           </p>
-
         </div>
       </div>
     </div>

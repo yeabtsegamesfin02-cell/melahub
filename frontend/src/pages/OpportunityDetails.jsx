@@ -4,6 +4,8 @@ import BackButton from "../components/BackButton";
 import localOpportunities from "../data/opportunities";
 import "./OpportunityDetails.css";
 
+const API_URL = "http://localhost:5000";
+
 const OpportunityDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -23,11 +25,18 @@ const OpportunityDetails = () => {
     message: "",
   });
 
+  // =====================================
+  // LOAD OPPORTUNITY
+  // =====================================
+
   useEffect(() => {
     const fetchOpportunity = async () => {
+      setLoading(true);
+      setError("");
+
       try {
         const response = await fetch(
-          `http://localhost:5000/api/opportunities/${id}`
+          `${API_URL}/api/opportunities/${id}`
         );
 
         const data = await response.json();
@@ -38,8 +47,14 @@ const OpportunityDetails = () => {
           );
         }
 
-        setOpportunity(data.opportunity || data);
+        const backendOpportunity =
+          data.opportunity || data;
+
+        setOpportunity(backendOpportunity);
       } catch (err) {
+        console.error("Opportunity loading error:", err);
+
+        // Keep local opportunities as fallback
         const localOpportunity = localOpportunities.find(
           (item) => String(item.id) === String(id)
         );
@@ -47,7 +62,9 @@ const OpportunityDetails = () => {
         if (localOpportunity) {
           setOpportunity(localOpportunity);
         } else {
-          setError(err.message);
+          setError(
+            err.message || "Unable to load this opportunity."
+          );
         }
       } finally {
         setLoading(false);
@@ -57,12 +74,55 @@ const OpportunityDetails = () => {
     fetchOpportunity();
   }, [id]);
 
+  // =====================================
+  // FORM CHANGE
+  // =====================================
+
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
+    setFormData((current) => ({
+      ...current,
       [e.target.name]: e.target.value,
-    });
+    }));
   };
+
+  // =====================================
+  // OPEN APPLICATION
+  // =====================================
+
+  const handleOpenApply = () => {
+    const token =
+      localStorage.getItem("melahubToken") ||
+      localStorage.getItem("token");
+
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
+    const savedUser = localStorage.getItem("melahubUser");
+
+    if (savedUser) {
+      try {
+        const user = JSON.parse(savedUser);
+
+        setFormData((current) => ({
+          ...current,
+          name: current.name || user.name || "",
+          email: current.email || user.email || "",
+        }));
+      } catch (error) {
+        console.error("Could not read saved user:", error);
+      }
+    }
+
+    setSubmitMessage("");
+    setSubmitError("");
+    setShowApply(true);
+  };
+
+  // =====================================
+  // SUBMIT APPLICATION
+  // =====================================
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -77,13 +137,18 @@ const OpportunityDetails = () => {
         localStorage.getItem("token");
 
       if (!token) {
-        setSubmitError("Please login first.");
-        setSubmitting(false);
+        navigate("/login");
         return;
       }
 
+      if (!opportunity?._id) {
+        throw new Error(
+          "This opportunity cannot accept applications right now."
+        );
+      }
+
       const response = await fetch(
-        "http://localhost:5000/api/applications",
+        `${API_URL}/api/applications`,
         {
           method: "POST",
           headers: {
@@ -92,9 +157,9 @@ const OpportunityDetails = () => {
           },
           body: JSON.stringify({
             opportunityId: opportunity._id,
-            name: formData.name,
-            email: formData.email,
-            message: formData.message,
+            name: formData.name.trim(),
+            email: formData.email.trim(),
+            message: formData.message.trim(),
           }),
         }
       );
@@ -107,7 +172,9 @@ const OpportunityDetails = () => {
         );
       }
 
-      setSubmitMessage("Application submitted successfully! 🚀");
+      setSubmitMessage(
+        "Application submitted successfully! 🚀"
+      );
 
       setFormData({
         name: "",
@@ -115,11 +182,19 @@ const OpportunityDetails = () => {
         message: "",
       });
     } catch (err) {
-      setSubmitError(err.message);
+      console.error("Application error:", err);
+
+      setSubmitError(
+        err.message || "Something went wrong. Please try again."
+      );
     } finally {
       setSubmitting(false);
     }
   };
+
+  // =====================================
+  // LOADING
+  // =====================================
 
   if (loading) {
     return (
@@ -130,18 +205,45 @@ const OpportunityDetails = () => {
     );
   }
 
+  // =====================================
+  // ERROR
+  // =====================================
+
   if (error || !opportunity) {
     return (
       <div className="opportunity-error">
         <div>!</div>
+
         <h2>Opportunity unavailable</h2>
-        <p>{error || "We couldn't find this opportunity."}</p>
-        <button onClick={() => navigate("/opportunities")}>
+
+        <p>
+          {error || "We couldn't find this opportunity."}
+        </p>
+
+        <button
+          onClick={() => navigate("/opportunities")}
+        >
           ← Back to Opportunities
         </button>
       </div>
     );
   }
+
+  // =====================================
+  // DATA HELPERS
+  // =====================================
+
+  const skills = Array.isArray(opportunity.skills)
+    ? opportunity.skills
+    : [];
+
+  const interests = Array.isArray(opportunity.interests)
+    ? opportunity.interests
+    : [];
+
+  const deadline = opportunity.deadline
+    ? new Date(opportunity.deadline).toLocaleDateString()
+    : "No deadline";
 
   return (
     <div className="opportunity-page">
@@ -171,16 +273,15 @@ const OpportunityDetails = () => {
             </p>
 
             <div className="hero-meta">
-              <span>⌖ {opportunity.location || "Ethiopia"}</span>
 
               <span>
-                ◷{" "}
-                {opportunity.deadline
-                  ? new Date(
-                      opportunity.deadline
-                    ).toLocaleDateString()
-                  : "No deadline"}
+                ⌖ {opportunity.location || "Ethiopia"}
               </span>
+
+              <span>
+                ◷ {deadline}
+              </span>
+
             </div>
 
           </div>
@@ -192,16 +293,23 @@ const OpportunityDetails = () => {
 
           <main className="opportunity-main">
 
+            {/* ABOUT */}
             <section className="detail-card">
-              <span className="section-label">ABOUT</span>
+
+              <span className="section-label">
+                ABOUT
+              </span>
+
               <h2>What you'll be doing</h2>
 
               <p className="description">
                 {opportunity.description ||
                   "No description provided for this opportunity."}
               </p>
+
             </section>
 
+            {/* SKILLS */}
             <section className="detail-card">
 
               <span className="section-label">
@@ -215,9 +323,13 @@ const OpportunityDetails = () => {
                 <h3>Skills</h3>
 
                 <div className="tags">
-                  {(opportunity.skills || []).length > 0 ? (
-                    opportunity.skills.map((skill, index) => (
-                      <span className="tag" key={index}>
+
+                  {skills.length > 0 ? (
+                    skills.map((skill, index) => (
+                      <span
+                        className="tag"
+                        key={`${skill}-${index}`}
+                      >
                         {skill}
                       </span>
                     ))
@@ -226,6 +338,7 @@ const OpportunityDetails = () => {
                       No specific skills listed.
                     </span>
                   )}
+
                 </div>
 
               </div>
@@ -235,19 +348,22 @@ const OpportunityDetails = () => {
                 <h3>Interests</h3>
 
                 <div className="tags">
-                  {(opportunity.interests || []).length > 0 ? (
-                    opportunity.interests.map(
-                      (interest, index) => (
-                        <span className="tag interest" key={index}>
-                          {interest}
-                        </span>
-                      )
-                    )
+
+                  {interests.length > 0 ? (
+                    interests.map((interest, index) => (
+                      <span
+                        className="tag interest"
+                        key={`${interest}-${index}`}
+                      >
+                        {interest}
+                      </span>
+                    ))
                   ) : (
                     <span className="muted">
                       No specific interests listed.
                     </span>
                   )}
+
                 </div>
 
               </div>
@@ -259,7 +375,9 @@ const OpportunityDetails = () => {
           {/* APPLY CARD */}
           <aside className="apply-card">
 
-            <span className="section-label">READY?</span>
+            <span className="section-label">
+              READY?
+            </span>
 
             <h2>Take the next step.</h2>
 
@@ -269,11 +387,7 @@ const OpportunityDetails = () => {
 
             <button
               className="apply-button"
-              onClick={() => {
-                setShowApply(true);
-                setSubmitMessage("");
-                setSubmitError("");
-              }}
+              onClick={handleOpenApply}
             >
               Apply Now
               <span>↗</span>
@@ -293,16 +407,27 @@ const OpportunityDetails = () => {
       {showApply && (
         <div
           className="modal-overlay"
-          onClick={() => setShowApply(false)}
+          onClick={() => {
+            if (!submitting) {
+              setShowApply(false);
+            }
+          }}
         >
+
           <div
             className="application-modal"
             onClick={(e) => e.stopPropagation()}
           >
 
             <button
+              type="button"
               className="modal-close"
-              onClick={() => setShowApply(false)}
+              onClick={() => {
+                if (!submitting) {
+                  setShowApply(false);
+                }
+              }}
+              disabled={submitting}
             >
               ×
             </button>
@@ -318,23 +443,34 @@ const OpportunityDetails = () => {
               <strong>{opportunity.title}</strong>
             </p>
 
+            {/* SUCCESS */}
             {submitMessage && (
               <div className="success-message">
                 ✓ {submitMessage}
+
+                <button
+                  type="button"
+                  onClick={() => setShowApply(false)}
+                >
+                  Close
+                </button>
               </div>
             )}
 
+            {/* ERROR */}
             {submitError && (
               <div className="error-message">
                 {submitError}
               </div>
             )}
 
+            {/* FORM */}
             {!submitMessage && (
               <form onSubmit={handleSubmit}>
 
                 <label>
                   Your Name
+
                   <input
                     type="text"
                     name="name"
@@ -342,11 +478,13 @@ const OpportunityDetails = () => {
                     value={formData.name}
                     onChange={handleChange}
                     required
+                    minLength={2}
                   />
                 </label>
 
                 <label>
                   Email Address
+
                   <input
                     type="email"
                     name="email"
@@ -359,6 +497,7 @@ const OpportunityDetails = () => {
 
                 <label>
                   Why are you interested?
+
                   <textarea
                     name="message"
                     placeholder="Tell them why you're a great fit..."
@@ -366,6 +505,7 @@ const OpportunityDetails = () => {
                     onChange={handleChange}
                     rows="6"
                     required
+                    minLength={10}
                   />
                 </label>
 
@@ -383,6 +523,7 @@ const OpportunityDetails = () => {
             )}
 
           </div>
+
         </div>
       )}
 

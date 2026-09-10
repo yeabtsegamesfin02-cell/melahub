@@ -1,335 +1,718 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
-import BackButton from "../components/BackButton";
-import localOpportunities from "../data/opportunities";
-import "./Opportunities.css";
+import { Link } from "react-router-dom";
+import Navbar from "../components/Navbar";
 
-const Opportunities = () => {
-  const [searchParams] = useSearchParams();
+const API_URL =
+  import.meta.env.VITE_API_URL || "http://localhost:5000";
 
+const getToken = () =>
+  localStorage.getItem("melahubToken") ||
+  localStorage.getItem("token");
+
+function Opportunities() {
   const [opportunities, setOpportunities] = useState([]);
+  const [savedOpportunities, setSavedOpportunities] = useState([]);
   const [search, setSearch] = useState("");
-  const [category, setCategory] = useState(
-    () => searchParams.get("category") || "All"
-  );
-  const [sort, setSort] = useState("latest");
+  const [category, setCategory] = useState("All");
+  const [location, setLocation] = useState("All");
+  const [sortBy, setSortBy] = useState("Newest");
+
   const [loading, setLoading] = useState(true);
+  const [savedLoading, setSavedLoading] = useState(false);
+  const [savingId, setSavingId] = useState(null);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    fetchOpportunities();
-  }, []);
+  // =====================================
+  // LOAD OPPORTUNITIES
+  // =====================================
 
-  async function fetchOpportunities() {
+  const loadOpportunities = async () => {
     try {
       setLoading(true);
       setError("");
 
       const response = await fetch(
-        "http://localhost:5000/api/opportunities"
+        `${API_URL}/api/opportunities`
       );
 
       const data = await response.json();
 
       if (!response.ok) {
         throw new Error(
-          data.message || "Could not load opportunities."
+          data.message || "Failed to load opportunities."
         );
       }
 
-      setOpportunities(data.opportunities?.length ? data.opportunities : localOpportunities);
-    } catch {
-      setError("");
-      setOpportunities(localOpportunities);
+      setOpportunities(data.opportunities || []);
+    } catch (err) {
+      console.error(
+        "Failed to load opportunities:",
+        err
+      );
+
+      setError(
+        err.message ||
+          "Could not connect to MelaHub server."
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  const categories = useMemo(() => {
-    const unique = [
-      ...new Set(
-        opportunities
-          .map((item) => item.category)
-          .filter(Boolean)
-      ),
-    ];
+  // =====================================
+  // LOAD SAVED OPPORTUNITIES
+  // =====================================
 
-    return ["All", ...unique];
-  }, [opportunities]);
+  const loadSavedOpportunities = async () => {
+    const token = getToken();
 
-  const filteredOpportunities = useMemo(() => {
-    let result = [...opportunities];
-
-    if (search.trim()) {
-      const query = search.toLowerCase();
-
-      result = result.filter((item) =>
-        [
-          item.title,
-          item.description,
-          item.category,
-          item.organization,
-          item.location,
-          ...(item.skills || []),
-          ...(item.interests || []),
-        ]
-          .join(" ")
-          .toLowerCase()
-          .includes(query)
-      );
+    if (!token) {
+      setSavedOpportunities([]);
+      return;
     }
 
-    if (category !== "All") {
-      result = result.filter(
-        (item) => item.category === category
+    try {
+      setSavedLoading(true);
+
+      const response = await fetch(
+        `${API_URL}/api/saved-opportunities`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
-    }
 
-    if (sort === "latest") {
-      result.sort(
-        (a, b) =>
-          new Date(b.createdAt || 0) -
-          new Date(a.createdAt || 0)
+      const data = await response.json();
+
+      if (response.status === 401) {
+        setSavedOpportunities([]);
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          data.message ||
+            "Failed to load saved opportunities."
+        );
+      }
+
+      setSavedOpportunities(
+        data.opportunities || []
       );
-    }
-
-    if (sort === "deadline") {
-      result.sort(
-        (a, b) =>
-          new Date(a.deadline || "9999-12-31") -
-          new Date(b.deadline || "9999-12-31")
+    } catch (err) {
+      console.error(
+        "Failed to load saved opportunities:",
+        err
       );
+    } finally {
+      setSavedLoading(false);
     }
-
-    if (sort === "title") {
-      result.sort((a, b) =>
-        (a.title || "").localeCompare(b.title || "")
-      );
-    }
-
-    return result;
-  }, [opportunities, search, category, sort]);
-
-  const getInitial = (title) =>
-    title?.charAt(0)?.toUpperCase() || "M";
-
-  const getDeadlineText = (deadline) => {
-    if (!deadline) return "Open deadline";
-
-    return `Deadline ${new Date(
-      deadline
-    ).toLocaleDateString()}`;
   };
 
-  if (loading) {
-    return (
-      <div className="opportunities-page">
-        <div className="opportunities-loading">
-          <div className="opportunities-loader"></div>
-          <h2>Finding opportunities...</h2>
-          <p>Loading the latest possibilities for you.</p>
-        </div>
-      </div>
-    );
-  }
+  // =====================================
+  // INITIAL LOAD
+  // =====================================
 
-  if (error) {
-    return (
-      <div className="opportunities-page">
-        <div className="opportunities-error">
-          <div className="error-mark">!</div>
-          <h2>Something went wrong</h2>
-          <p>{error}</p>
+  useEffect(() => {
+    loadOpportunities();
+    loadSavedOpportunities();
+  }, []);
 
-          <button onClick={fetchOpportunities}>
-            🔄 Try Again
-          </button>
-        </div>
-      </div>
+  // =====================================
+  // SAVE / UNSAVE
+  // =====================================
+
+  const toggleSave = async (opportunity) => {
+    const token = getToken();
+
+    if (!token) {
+      alert("Please login to save opportunities.");
+      return;
+    }
+
+    const opportunityId = opportunity._id || opportunity.id;
+
+    if (!opportunityId) {
+      return;
+    }
+
+    const isSaved = savedOpportunities.some(
+      (item) =>
+        String(item._id || item.id) ===
+        String(opportunityId)
     );
-  }
+
+    try {
+      setSavingId(opportunityId);
+
+      const response = await fetch(
+        `${API_URL}/api/saved-opportunities/${opportunityId}`,
+        {
+          method: isSaved ? "DELETE" : "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.status === 401) {
+        alert("Your session has expired. Please login again.");
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          data.message ||
+            "Failed to update saved opportunity."
+        );
+      }
+
+      if (isSaved) {
+        setSavedOpportunities((current) =>
+          current.filter(
+            (item) =>
+              String(item._id || item.id) !==
+              String(opportunityId)
+          )
+        );
+      } else {
+        setSavedOpportunities((current) => [
+          opportunity,
+          ...current,
+        ]);
+      }
+    } catch (err) {
+      console.error(
+        "Save opportunity error:",
+        err
+      );
+
+      alert(
+        err.message ||
+          "Failed to update saved opportunity."
+      );
+    } finally {
+      setSavingId(null);
+    }
+  };
+
+  // =====================================
+  // HELPERS
+  // =====================================
+
+  const isSaved = (opportunityId) => {
+    return savedOpportunities.some(
+      (item) =>
+        String(item._id || item.id) ===
+        String(opportunityId)
+    );
+  };
+
+  const getOpportunityId = (opportunity) =>
+    opportunity._id || opportunity.id;
+
+  const getDeadline = (deadline) => {
+    if (!deadline) {
+      return "No deadline";
+    }
+
+    const date = new Date(deadline);
+
+    if (Number.isNaN(date.getTime())) {
+      return deadline;
+    }
+
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
+
+  const isDeadlinePassed = (deadline) => {
+    if (!deadline) {
+      return false;
+    }
+
+    const date = new Date(deadline);
+
+    return (
+      !Number.isNaN(date.getTime()) &&
+      date < new Date()
+    );
+  };
+
+  // =====================================
+  // FILTER OPTIONS
+  // =====================================
+
+  const categories = useMemo(() => {
+    const values = opportunities
+      .map((item) => item.category)
+      .filter(Boolean);
+
+    return ["All", ...new Set(values)];
+  }, [opportunities]);
+
+  const locations = useMemo(() => {
+    const values = opportunities
+      .map((item) => item.location)
+      .filter(Boolean);
+
+    return ["All", ...new Set(values)];
+  }, [opportunities]);
+
+  // =====================================
+  // FILTER + SEARCH + SORT
+  // =====================================
+
+  const filteredOpportunities = useMemo(() => {
+    const query = search.trim().toLowerCase();
+
+    const result = opportunities.filter((item) => {
+      const title =
+        item.title?.toLowerCase() || "";
+
+      const description =
+        item.description?.toLowerCase() || "";
+
+      const organization =
+        item.organization?.toLowerCase() || "";
+
+      const itemCategory =
+        item.category?.toLowerCase() || "";
+
+      const itemLocation =
+        item.location?.toLowerCase() || "";
+
+      const matchesSearch =
+        !query ||
+        title.includes(query) ||
+        description.includes(query) ||
+        organization.includes(query) ||
+        itemCategory.includes(query) ||
+        itemLocation.includes(query);
+
+      const matchesCategory =
+        category === "All" ||
+        item.category === category;
+
+      const matchesLocation =
+        location === "All" ||
+        item.location === location;
+
+      return (
+        matchesSearch &&
+        matchesCategory &&
+        matchesLocation
+      );
+    });
+
+    return [...result].sort((a, b) => {
+      if (sortBy === "A-Z") {
+        return (a.title || "").localeCompare(
+          b.title || ""
+        );
+      }
+
+      if (sortBy === "Deadline") {
+        const dateA = a.deadline
+          ? new Date(a.deadline).getTime()
+          : Infinity;
+
+        const dateB = b.deadline
+          ? new Date(b.deadline).getTime()
+          : Infinity;
+
+        return dateA - dateB;
+      }
+
+      if (sortBy === "Category") {
+        return (a.category || "").localeCompare(
+          b.category || ""
+        );
+      }
+
+      // Newest
+      const dateA = a.createdAt
+        ? new Date(a.createdAt).getTime()
+        : 0;
+
+      const dateB = b.createdAt
+        ? new Date(b.createdAt).getTime()
+        : 0;
+
+      return dateB - dateA;
+    });
+  }, [
+    opportunities,
+    search,
+    category,
+    location,
+    sortBy,
+  ]);
+
+  // =====================================
+  // UI
+  // =====================================
 
   return (
-    <div className="opportunities-page">
-      <div className="opportunities-container">
+    <>
+      <Navbar />
 
-        <BackButton />
-
+      <main className="opportunities-page">
+        {/* HERO */}
         <section className="opportunities-hero">
-          <div className="hero-copy">
-            <span className="eyebrow">
-              MELAHUB OPPORTUNITY HUB
+          <div className="opportunities-hero-content">
+            <span className="opportunities-eyebrow">
+              🌍 Built for Ethiopia
             </span>
 
             <h1>
-              Find where your
-              <span> potential fits.</span>
+              Discover Your Next{" "}
+              <span>Opportunity</span>
             </h1>
 
             <p>
-              Discover jobs, scholarships, internships,
-              training, grants and opportunities built for
-              ambitious people in Ethiopia.
+              Find scholarships, internships,
+              trainings, fellowships, and other
+              opportunities built to help you move
+              forward.
             </p>
-          </div>
 
-          <div className="hero-orbit">
-            <div className="orbit-center">M</div>
-            <span className="orbit-dot dot-one">✦</span>
-            <span className="orbit-dot dot-two">↗</span>
-            <span className="orbit-dot dot-three">●</span>
+            <div className="opportunities-search">
+              <span>🔎</span>
+
+              <input
+                type="text"
+                placeholder="Search opportunities..."
+                value={search}
+                onChange={(e) =>
+                  setSearch(e.target.value)
+                }
+              />
+
+              {search && (
+                <button
+                  type="button"
+                  onClick={() => setSearch("")}
+                  aria-label="Clear search"
+                >
+                  ×
+                </button>
+              )}
+            </div>
           </div>
         </section>
 
-        <section className="discover-bar">
-          <div className="search-box">
-            <span>⌕</span>
+        {/* CONTROLS */}
+        <section className="opportunities-controls">
+          <div className="opportunities-control-inner">
+            <div className="opportunities-filter">
+              <label>Category</label>
 
-            <input
-              type="text"
-              placeholder="Search opportunities, skills, organizations..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-
-            {search && (
-              <button onClick={() => setSearch("")}>
-                ×
-              </button>
-            )}
-          </div>
-
-          <div className="sort-box">
-            <label>Sort</label>
-
-            <select
-              value={sort}
-              onChange={(e) => setSort(e.target.value)}
-            >
-              <option value="latest">Latest</option>
-              <option value="deadline">Deadline</option>
-              <option value="title">A–Z</option>
-            </select>
-          </div>
-        </section>
-
-        <section className="category-scroll">
-          {categories.map((item) => (
-            <button
-              key={item}
-              className={
-                category === item
-                  ? "category-pill active"
-                  : "category-pill"
-              }
-              onClick={() => setCategory(item)}
-            >
-              {item}
-            </button>
-          ))}
-        </section>
-
-        <div className="results-header">
-          <div>
-            <span className="eyebrow">DISCOVER</span>
-
-            <h2>
-              Opportunities
-              <span className="result-number">
-                {filteredOpportunities.length}
-              </span>
-            </h2>
-          </div>
-
-          {search && (
-            <p>
-              Results for <strong>"{search}"</strong>
-            </p>
-          )}
-        </div>
-
-        {filteredOpportunities.length === 0 ? (
-          <div className="no-results">
-            <div className="no-results-icon">⌕</div>
-
-            <h3>Nothing found yet.</h3>
-
-            <p>
-              Try another search or explore a different
-              category.
-            </p>
-
-            <button
-              onClick={() => {
-                setSearch("");
-                setCategory("All");
-              }}
-            >
-              Clear Filters
-            </button>
-          </div>
-        ) : (
-          <div className="opportunity-grid">
-            {filteredOpportunities.map((item) => (
-              <article
-                className="opportunity-card"
-                key={item._id || item.id}
+              <select
+                value={category}
+                onChange={(e) =>
+                  setCategory(e.target.value)
+                }
               >
-                <div className="card-top">
-                  <div className="opportunity-avatar">
-                    {getInitial(item.title)}
+                {categories.map((item) => (
+                  <option
+                    value={item}
+                    key={item}
+                  >
+                    {item}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="opportunities-filter">
+              <label>Location</label>
+
+              <select
+                value={location}
+                onChange={(e) =>
+                  setLocation(e.target.value)
+                }
+              >
+                {locations.map((item) => (
+                  <option
+                    value={item}
+                    key={item}
+                  >
+                    {item}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="opportunities-filter">
+              <label>Sort by</label>
+
+              <select
+                value={sortBy}
+                onChange={(e) =>
+                  setSortBy(e.target.value)
+                }
+              >
+                <option value="Newest">
+                  Newest
+                </option>
+                <option value="Deadline">
+                  Deadline
+                </option>
+                <option value="A-Z">
+                  A-Z
+                </option>
+                <option value="Category">
+                  Category
+                </option>
+              </select>
+            </div>
+
+            <div className="opportunities-results">
+              <strong>
+                {filteredOpportunities.length}
+              </strong>{" "}
+              opportunities
+            </div>
+
+            <div className="opportunities-saved-count">
+              ⭐ {savedLoading ? "..." : savedOpportunities.length}{" "}
+              saved
+            </div>
+          </div>
+        </section>
+
+        {/* CONTENT */}
+        <section className="opportunities-content">
+          <div className="opportunities-container">
+            {error && (
+              <div className="opportunities-error">
+                <div>⚠️</div>
+
+                <h3>
+                  Could not load opportunities
+                </h3>
+
+                <p>{error}</p>
+
+                <button
+                  type="button"
+                  onClick={loadOpportunities}
+                >
+                  Try Again
+                </button>
+              </div>
+            )}
+
+            {loading && !error && (
+              <div className="opportunities-loading">
+                <div className="opportunities-spinner" />
+                <p>
+                  Loading opportunities...
+                </p>
+              </div>
+            )}
+
+            {!loading &&
+              !error &&
+              filteredOpportunities.length === 0 && (
+                <div className="opportunities-empty">
+                  <div className="opportunities-empty-icon">
+                    🔍
                   </div>
 
-                  <span className="category-label">
-                    {item.category}
-                  </span>
+                  <h3>
+                    No opportunities found
+                  </h3>
+
+                  <p>
+                    Try changing your search or
+                    filters.
+                  </p>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSearch("");
+                      setCategory("All");
+                      setLocation("All");
+                      setSortBy("Newest");
+                    }}
+                  >
+                    Clear Filters
+                  </button>
                 </div>
+              )}
 
-                <h3>{item.title}</h3>
+            {!loading &&
+              !error &&
+              filteredOpportunities.length > 0 && (
+                <div className="opportunities-grid">
+                  {filteredOpportunities.map(
+                    (opportunity) => {
+                      const id =
+                        getOpportunityId(
+                          opportunity
+                        );
 
-                <p className="organization">
-                  {item.organization || "MelaHub"}
-                </p>
+                      const saved =
+                        isSaved(id);
 
-                <p className="description">
-                  {item.description ||
-                    "Explore this opportunity and discover where it can take you."}
-                </p>
+                      const expired =
+                        isDeadlinePassed(
+                          opportunity.deadline
+                        );
 
-                <div className="card-details">
-                  <span>
-                    ⌖ {item.location || "Ethiopia"}
-                  </span>
+                      return (
+                        <article
+                          className="opportunity-card"
+                          key={id}
+                        >
+                          <div className="opportunity-card-top">
+                            <div className="opportunity-category">
+                              {opportunity.category ||
+                                "Opportunity"}
+                            </div>
 
-                  <span>
-                    ◷ {getDeadlineText(item.deadline)}
-                  </span>
+                            <button
+                              type="button"
+                              className={`opportunity-save-button ${
+                                saved
+                                  ? "saved"
+                                  : ""
+                              }`}
+                              onClick={() =>
+                                toggleSave(
+                                  opportunity
+                                )
+                              }
+                              disabled={
+                                savingId === id
+                              }
+                              title={
+                                saved
+                                  ? "Remove from saved"
+                                  : "Save opportunity"
+                              }
+                            >
+                              {savingId === id
+                                ? "..."
+                                : saved
+                                ? "★"
+                                : "☆"}
+                            </button>
+                          </div>
+
+                          <div className="opportunity-card-body">
+                            <h2>
+                              {opportunity.title}
+                            </h2>
+
+                            {opportunity.organization && (
+                              <div className="opportunity-organization">
+                                🏢{" "}
+                                {
+                                  opportunity.organization
+                                }
+                              </div>
+                            )}
+
+                            <p>
+                              {opportunity.description ||
+                                "Explore this opportunity and discover how it can help you build your future."}
+                            </p>
+
+                            <div className="opportunity-meta">
+                              <span>
+                                📍{" "}
+                                {opportunity.location ||
+                                  "Ethiopia"}
+                              </span>
+
+                              <span
+                                className={
+                                  expired
+                                    ? "deadline-expired"
+                                    : ""
+                                }
+                              >
+                                ⏳{" "}
+                                {getDeadline(
+                                  opportunity.deadline
+                                )}
+                              </span>
+                            </div>
+
+                            {Array.isArray(
+                              opportunity.skills
+                            ) &&
+                              opportunity.skills
+                                .length > 0 && (
+                                <div className="opportunity-tags">
+                                  {opportunity.skills
+                                    .slice(0, 4)
+                                    .map(
+                                      (skill) => (
+                                        <span
+                                          key={
+                                            skill
+                                          }
+                                        >
+                                          {skill}
+                                        </span>
+                                      )
+                                    )}
+                                </div>
+                              )}
+                          </div>
+
+                          <div className="opportunity-card-footer">
+                            <Link
+                              to={`/opportunities/${id}`}
+                              className="opportunity-view-button"
+                            >
+                              View Details →
+                            </Link>
+
+                            <button
+                              type="button"
+                              className={`opportunity-save-text ${
+                                saved
+                                  ? "saved"
+                                  : ""
+                              }`}
+                              onClick={() =>
+                                toggleSave(
+                                  opportunity
+                                )
+                              }
+                              disabled={
+                                savingId === id
+                              }
+                            >
+                              {saved
+                                ? "Saved"
+                                : "Save"}
+                            </button>
+                          </div>
+                        </article>
+                      );
+                    }
+                  )}
                 </div>
-
-                <div className="card-tags">
-                  {(item.skills || [])
-                    .slice(0, 3)
-                    .map((skill, index) => (
-                      <span key={index}>{skill}</span>
-                    ))}
-                </div>
-
-                <Link
-                  to={`/opportunities/${item._id || item.id}`}
-                  className="view-opportunity"
-                >
-                  View Opportunity
-                  <span>→</span>
-                </Link>
-              </article>
-            ))}
+              )}
           </div>
-        )}
-
-      </div>
-    </div>
+        </section>
+      </main>
+    </>
   );
-};
+}
 
 export default Opportunities;

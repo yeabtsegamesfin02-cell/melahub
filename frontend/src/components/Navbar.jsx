@@ -57,12 +57,17 @@ function Navbar() {
 
         {/* NAVIGATION */}
         <nav className={menuOpen ? "nav-links active" : "nav-links"}>
+
           <NavLink to="/" end onClick={closeMenu}>
             🏠 Home
           </NavLink>
 
           <NavLink to="/opportunities" onClick={closeMenu}>
             🔎 Opportunities
+          </NavLink>
+
+          <NavLink to="/businesses" onClick={closeMenu}>
+            🏢 Businesses
           </NavLink>
 
           <NavLink to="/categories" onClick={closeMenu}>
@@ -85,12 +90,16 @@ function Navbar() {
         {/* ACTIONS */}
         <div className={menuOpen ? "nav-actions active" : "nav-actions"}>
 
-          {/* DARK MODE — ALWAYS VISIBLE */}
+          {/* DARK MODE */}
           <button
             type="button"
             className="theme-btn"
             onClick={toggleDarkMode}
-            title={darkMode ? "Switch to light mode" : "Switch to dark mode"}
+            title={
+              darkMode
+                ? "Switch to light mode"
+                : "Switch to dark mode"
+            }
           >
             {darkMode ? "☀️" : "🌙"}
           </button>

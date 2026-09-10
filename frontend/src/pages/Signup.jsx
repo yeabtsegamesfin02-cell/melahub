@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api } from "../services/api";
+import BackButton from "../components/BackButton";
 import "./Signup.css";
 
 function Signup() {
@@ -45,6 +46,7 @@ function Signup() {
 
   return (
     <main className="signup-page">
+      <BackButton />
 
       <div className="signup-card">
 

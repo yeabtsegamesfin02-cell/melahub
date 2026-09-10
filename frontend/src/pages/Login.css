@@ -2,10 +2,24 @@
    MELAHUB LOGIN PAGE
    ========================================================= */
 
+:root {
+  --melahub-orange: #f97316;
+  --melahub-orange-strong: #ea580c;
+  --melahub-orange-soft: #fff7ed;
+  --melahub-dark: #17202b;
+  --melahub-navy: #243447;
+  --melahub-surface: #fffaf5;
+  --melahub-text: #1f2937;
+  --melahub-muted: #6b7280;
+  --melahub-placeholder: #9ca3af;
+  --melahub-line: #e5e7eb;
+  --melahub-error: #dc2626;
+}
+
 .auth-page {
   min-height: 100vh;
   display: flex;
-  background: #ffffff;
+  background: linear-gradient(135deg, var(--melahub-orange-soft) 0%, #ffffff 100%);
 }
 
 /* =========================================================
@@ -18,7 +32,7 @@
   min-height: 100vh;
   overflow: hidden;
   background:
-    linear-gradient(135deg, #111827, #1f2937 50%, #f59e0b);
+    linear-gradient(135deg, var(--melahub-dark) 0%, var(--melahub-navy) 45%, var(--melahub-orange) 100%);
 }
 
 .showcase-overlay {
@@ -58,7 +72,7 @@
 }
 
 .auth-logo span {
-  color: #f59e0b;
+  color: var(--melahub-orange);
 }
 
 .showcase-text {
@@ -85,7 +99,7 @@
 }
 
 .showcase-text h1 span {
-  color: #f59e0b;
+  color: #fed7aa;
 }
 
 .showcase-text > p {
@@ -116,8 +130,8 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: #f59e0b;
-  color: #111827;
+  background: #fed7aa;
+  color: var(--melahub-dark);
   font-weight: 900;
 }
 
@@ -166,7 +180,7 @@
 .welcome-text {
   display: block;
   margin-bottom: 10px;
-  color: #f59e0b;
+  color: var(--melahub-orange-strong);
   font-size: 12px;
   font-weight: 900;
   letter-spacing: 1.5px;
@@ -174,7 +188,7 @@
 
 .auth-heading h2 {
   margin: 0 0 10px;
-  color: #111827;
+  color: var(--melahub-text);
   font-size: 36px;
   line-height: 1.15;
   letter-spacing: -1px;
@@ -182,12 +196,12 @@
 
 .auth-heading p {
   margin: 0;
-  color: #6b7280;
+  color: var(--melahub-muted);
   font-size: 14px;
 }
 
 .auth-heading a {
-  color: #f59e0b;
+  color: var(--melahub-orange-strong);
   font-weight: 800;
   text-decoration: none;
 }
@@ -215,7 +229,7 @@
 
 .form-group label,
 .label-row label {
-  color: #374151;
+  color: var(--melahub-text);
   font-size: 13px;
   font-weight: 800;
 }
@@ -230,7 +244,7 @@
   border: none;
   padding: 0;
   background: none;
-  color: #f59e0b;
+  color: var(--melahub-orange-strong);
   font-size: 12px;
   font-weight: 800;
   cursor: pointer;
@@ -249,23 +263,23 @@
   width: 100%;
   height: 55px;
   padding: 0 48px;
-  border: 1.5px solid #e5e7eb;
+  border: 1.5px solid var(--melahub-line);
   border-radius: 12px;
   outline: none;
-  background: #f9fafb;
-  color: #111827;
+  background: var(--melahub-surface);
+  color: var(--melahub-text);
   font-size: 14px;
   transition: 0.25s ease;
 }
 
 .input-wrapper input::placeholder {
-  color: #9ca3af;
+  color: var(--melahub-placeholder);
 }
 
 .input-wrapper input:focus {
-  border-color: #f59e0b;
+  border-color: var(--melahub-orange);
   background: #ffffff;
-  box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.1);
+  box-shadow: 0 0 0 4px rgba(255, 138, 29, 0.12);
 }
 
 .input-icon {
@@ -274,7 +288,7 @@
   left: 17px;
   top: 50%;
   transform: translateY(-50%);
-  color: #9ca3af;
+  color: var(--melahub-placeholder);
   font-size: 16px;
 }
 
@@ -291,12 +305,14 @@
   padding: 5px;
 }
 
-.input-error input {
-  border-color: #ef4444;
+.input-wrapper.input-error input {
+  border-color: var(--melahub-error);
+  background: #fff5f5;
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.08);
 }
 
 .error-message {
-  color: #ef4444;
+  color: var(--melahub-error);
   font-size: 12px;
   font-weight: 700;
 }
@@ -315,7 +331,7 @@
   display: inline-flex;
   align-items: center;
   gap: 9px;
-  color: #6b7280;
+  color: var(--melahub-muted);
   font-size: 13px;
   cursor: pointer;
 }
@@ -335,8 +351,8 @@
 }
 
 .checkbox-label input:checked + .custom-checkbox {
-  border-color: #f59e0b;
-  background: #f59e0b;
+  border-color: var(--melahub-orange);
+  background: var(--melahub-orange);
   box-shadow: inset 0 0 0 4px #ffffff;
 }
 
@@ -369,13 +385,13 @@
   gap: 12px;
   border: none;
   border-radius: 12px;
-  background: #f59e0b;
-  color: #111827;
+  background: linear-gradient(135deg, var(--melahub-orange) 0%, #fb923c 100%);
+  color: #ffffff;
   font-size: 15px;
   font-weight: 900;
   cursor: pointer;
   transition: 0.25s ease;
-  box-shadow: 0 10px 25px rgba(245, 158, 11, 0.2);
+  box-shadow: 0 10px 25px rgba(255, 138, 29, 0.26);
 }
 
 .auth-submit span {
@@ -385,8 +401,8 @@
 
 .auth-submit:hover {
   transform: translateY(-2px);
-  background: #fbbf24;
-  box-shadow: 0 14px 30px rgba(245, 158, 11, 0.28);
+  background: linear-gradient(135deg, var(--melahub-orange-strong) 0%, #f97316 100%);
+  box-shadow: 0 14px 30px rgba(255, 138, 29, 0.3);
 }
 
 .auth-submit:hover span {
@@ -414,11 +430,11 @@
   content: "";
   height: 1px;
   flex: 1;
-  background: #e5e7eb;
+  background: var(--melahub-line);
 }
 
 .auth-divider span {
-  color: #9ca3af;
+  color: var(--melahub-placeholder);
   font-size: 10px;
   font-weight: 800;
 }
@@ -441,10 +457,10 @@
   align-items: center;
   justify-content: center;
   gap: 12px;
-  border: 1.5px solid #e5e7eb;
+  border: 1.5px solid var(--melahub-line);
   border-radius: 11px;
   background: #ffffff;
-  color: #374151;
+  color: var(--melahub-text);
   font-size: 13px;
   font-weight: 800;
   cursor: pointer;
@@ -474,7 +490,7 @@
 .security-note {
   margin: 22px 0 0;
   text-align: center;
-  color: #9ca3af;
+  color: var(--melahub-placeholder);
   font-size: 11px;
 }
 
@@ -539,7 +555,7 @@
   }
 
   .mobile-logo .auth-logo {
-    color: #111827;
+    color: var(--melahub-text);
     font-size: 27px;
   }
 

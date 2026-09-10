@@ -27,8 +27,10 @@ const userSchema = new mongoose.Schema(
       required: true,
     },
 
+    // USER ROLE
     role: {
       type: String,
+      enum: ["user", "admin"],
       default: "user",
     },
 
@@ -90,21 +92,18 @@ const User = mongoose.model("User", userSchema);
 
 const connectDB = async () => {
   try {
-    // Check whether .env contains the MongoDB URI
     if (!process.env.MONGODB_URI) {
       throw new Error(
         "MONGODB_URI is missing from the .env file."
       );
     }
 
-    // SECURITY: Never print the password
     console.log("🔍 MongoDB URI loaded: YES");
     console.log(
       "🔍 URI starts with:",
       process.env.MONGODB_URI.substring(0, 20) + "..."
     );
 
-    // Connect to MongoDB Atlas
     await mongoose.connect(process.env.MONGODB_URI);
 
     console.log("=================================");

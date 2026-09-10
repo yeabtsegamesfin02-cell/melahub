@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useEffect, useState } from "react";
 
 const AuthContext = createContext();
@@ -33,8 +34,17 @@ export function AuthProvider({ children }) {
     localStorage.removeItem("melahubToken");
     localStorage.removeItem("token");
     localStorage.removeItem("melahubUser");
+
     setUser(null);
   };
+
+  const isLoggedIn =
+    !!user &&
+    !!localStorage.getItem("melahubToken");
+
+  const isAdmin =
+    !!user &&
+    user.role === "admin";
 
   return (
     <AuthContext.Provider
@@ -43,7 +53,8 @@ export function AuthProvider({ children }) {
         login,
         register,
         logout,
-        isLoggedIn: !!user && !!localStorage.getItem("melahubToken"),
+        isLoggedIn,
+        isAdmin,
       }}
     >
       {children}
