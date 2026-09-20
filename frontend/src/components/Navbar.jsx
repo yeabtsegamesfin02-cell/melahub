@@ -80,6 +80,10 @@ function Navbar() {
                 📊 Dashboard
               </NavLink>
 
+              <NavLink to="/my-business" onClick={closeMenu}>
+                🏢 My Business
+              </NavLink>
+
               <NavLink to="/profile" onClick={closeMenu}>
                 👤 Profile
               </NavLink>

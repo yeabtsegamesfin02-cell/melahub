@@ -70,6 +70,138 @@ router.get("/", async (req, res) => {
   }
 });
 
+// =====================================
+// BUSINESS OWNER SELF-SERVICE
+// (any logged-in user can list their own business)
+// =====================================
+
+// GET MY BUSINESSES
+router.get("/my", protect, async (req, res) => {
+  try {
+    const businesses = await Business.find({
+      owner: req.user._id,
+    }).sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      businesses,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to load your businesses.",
+    });
+  }
+});
+
+// CREATE MY BUSINESS
+router.post("/my", protect, async (req, res) => {
+  try {
+    const {
+      name,
+      description,
+      category,
+      location,
+      phone,
+      email,
+      website,
+      image,
+    } = req.body;
+
+    if (!name || !category || !location) {
+      return res.status(400).json({
+        success: false,
+        message: "Name, category and location are required.",
+      });
+    }
+
+    const business = await Business.create({
+      name: name.trim(),
+      description: description?.trim() || "",
+      category: category.trim(),
+      location: location.trim(),
+      phone: phone?.trim() || "",
+      email: email?.trim() || "",
+      website: website?.trim() || "",
+      image: image?.trim() || "",
+      owner: req.user._id,
+      isActive: true,
+      subscriptionPlan: "Free",
+      subscriptionStatus: "active",
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Business listed successfully.",
+      business,
+    });
+  } catch (error) {
+    console.error("Business self-create error:", error.message);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to create business.",
+    });
+  }
+});
+
+// UPDATE MY BUSINESS
+router.put("/my/:id", protect, async (req, res) => {
+  try {
+    const business = await Business.findById(req.params.id);
+
+    if (!business) {
+      return res.status(404).json({
+        success: false,
+        message: "Business not found.",
+      });
+    }
+
+    if (
+      !business.owner ||
+      business.owner.toString() !== req.user._id.toString()
+    ) {
+      return res.status(403).json({
+        success: false,
+        message: "You do not own this business.",
+      });
+    }
+
+    const {
+      name,
+      description,
+      category,
+      location,
+      phone,
+      email,
+      website,
+      image,
+    } = req.body;
+
+    if (name) business.name = name.trim();
+    if (description !== undefined) business.description = description.trim();
+    if (category) business.category = category.trim();
+    if (location) business.location = location.trim();
+    if (phone !== undefined) business.phone = phone.trim();
+    if (email !== undefined) business.email = email.trim();
+    if (website !== undefined) business.website = website.trim();
+    if (image !== undefined) business.image = image.trim();
+
+    await business.save();
+
+    res.json({
+      success: true,
+      message: "Business updated successfully.",
+      business,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to update business.",
+    });
+  }
+});
+
 // ADMIN GET ALL
 router.get("/admin/all", protect, adminOnly, async (req, res) => {
   try {

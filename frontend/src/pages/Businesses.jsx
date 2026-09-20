@@ -74,6 +74,15 @@ export default function Businesses() {
     });
   }, [businesses, search, category]);
 
+  const sortedBusinesses = useMemo(() => {
+    return [...filteredBusinesses].sort((a, b) => {
+      if (!!b.featured !== !!a.featured) {
+        return b.featured ? 1 : -1;
+      }
+      return 0;
+    });
+  }, [filteredBusinesses]);
+
   return (
     <main className="businesses-page">
       <BackButton />
@@ -155,11 +164,13 @@ export default function Businesses() {
           </div>
         )}
 
-        {!loading && !error && filteredBusinesses.length > 0 && (
+        {!loading && !error && sortedBusinesses.length > 0 && (
           <div className="businesses-grid">
-            {filteredBusinesses.map((business) => (
+            {sortedBusinesses.map((business) => (
               <article
-                className="business-card"
+                className={`business-card ${
+                  business.featured ? "business-card-featured" : ""
+                }`}
                 key={business._id || business.id}
               >
                 <div className="business-image">
@@ -177,6 +188,12 @@ export default function Businesses() {
                   <span className="business-category">
                     {business.category}
                   </span>
+
+                  {business.featured && (
+                    <span className="business-featured-badge">
+                      ⭐ Featured
+                    </span>
+                  )}
                 </div>
 
                 <div className="business-card-body">

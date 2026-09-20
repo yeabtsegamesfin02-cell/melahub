@@ -61,6 +61,33 @@ const businessSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+
+    // ========================================
+    // MONETIZATION FIELDS
+    // ========================================
+
+    subscriptionPlan: {
+      type: String,
+      enum: ["Free", "Basic", "Premium"],
+      default: "Free",
+    },
+
+    subscriptionStatus: {
+      type: String,
+      enum: ["active", "pending", "expired", "none"],
+      default: "none",
+    },
+
+    subscriptionExpiresAt: {
+      type: Date,
+      default: null,
+    },
+
+    // Premium subscribers are shown first / with a badge
+    featured: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

@@ -42,11 +42,15 @@ function Admin() {
   const [opportunities, setOpportunities] = useState([]);
   const [applications, setApplications] = useState([]);
   const [businesses, setBusinesses] = useState([]);
+  const [subscriptions, setSubscriptions] = useState([]);
+  const [subscriptionStats, setSubscriptionStats] = useState(null);
 
   const [loading, setLoading] = useState(true);
   const [opportunitiesLoading, setOpportunitiesLoading] = useState(false);
   const [applicationsLoading, setApplicationsLoading] = useState(false);
   const [businessesLoading, setBusinessesLoading] = useState(false);
+  const [subscriptionsLoading, setSubscriptionsLoading] = useState(false);
+  const [processingSubscriptionId, setProcessingSubscriptionId] = useState(null);
 
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
@@ -192,6 +196,7 @@ function Admin() {
         loadOpportunities(),
         loadApplications(),
         loadBusinesses(),
+        loadSubscriptions(),
       ]);
     } catch (err) {
       console.error("Admin dashboard error:", err);
@@ -285,6 +290,119 @@ function Admin() {
       setError(err.message);
     } finally {
       setBusinessesLoading(false);
+    }
+  };
+
+  // =========================================================
+  // SUBSCRIPTIONS / REVENUE
+  // =========================================================
+
+  const loadSubscriptions = async () => {
+    try {
+      setSubscriptionsLoading(true);
+
+      const [subsResponse, statsResponse] = await Promise.all([
+        fetch(`${API_URL}/api/subscriptions/admin/all`, {
+          headers: { Authorization: `Bearer ${getToken()}` },
+        }),
+        fetch(`${API_URL}/api/subscriptions/admin/stats`, {
+          headers: { Authorization: `Bearer ${getToken()}` },
+        }),
+      ]);
+
+      const subsData = await subsResponse.json();
+      const statsData = await statsResponse.json();
+
+      if (!subsResponse.ok) {
+        throw new Error(
+          subsData.message || "Could not load subscriptions."
+        );
+      }
+
+      setSubscriptions(subsData.subscriptions || []);
+
+      if (statsResponse.ok) {
+        setSubscriptionStats(statsData.stats);
+      }
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSubscriptionsLoading(false);
+    }
+  };
+
+  const handleApproveSubscription = async (subscription) => {
+    try {
+      setProcessingSubscriptionId(subscription._id);
+
+      const response = await fetch(
+        `${API_URL}/api/subscriptions/admin/${subscription._id}/approve`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${getToken()}`,
+          },
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Could not approve subscription.");
+      }
+
+      setSubscriptions((current) =>
+        current.map((item) =>
+          item._id === subscription._id ? data.subscription : item
+        )
+      );
+
+      await loadSubscriptions();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setProcessingSubscriptionId(null);
+    }
+  };
+
+  const handleRejectSubscription = async (subscription) => {
+    const reason = window.prompt(
+      "Reason for rejecting this payment (optional):",
+      ""
+    );
+
+    if (reason === null) return;
+
+    try {
+      setProcessingSubscriptionId(subscription._id);
+
+      const response = await fetch(
+        `${API_URL}/api/subscriptions/admin/${subscription._id}/reject`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${getToken()}`,
+          },
+          body: JSON.stringify({ notes: reason }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Could not reject subscription.");
+      }
+
+      setSubscriptions((current) =>
+        current.map((item) =>
+          item._id === subscription._id ? data.subscription : item
+        )
+      );
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setProcessingSubscriptionId(null);
     }
   };
 
@@ -912,6 +1030,10 @@ function Admin() {
       application.status === "Under Review"
   ).length;
 
+  const pendingSubscriptions = subscriptions.filter(
+    (sub) => sub.status === "pending"
+  );
+
   const renderRevenue = () => (
     <section className="admin-section">
       <div className="section-heading">
@@ -919,77 +1041,207 @@ function Admin() {
           <p className="admin-eyebrow">MONETIZATION</p>
           <h2>Revenue Center</h2>
           <p>
-            Track the platform activity that can become
-            future MelaHub revenue.
+            Review business subscription payments and track
+            recurring revenue.
           </p>
         </div>
+
+        <button
+          className="admin-refresh-button"
+          onClick={loadSubscriptions}
+        >
+          ↻ Refresh
+        </button>
       </div>
 
       <div className="admin-stats">
         <div className="admin-stat-card">
-          <div className="stat-icon">🏢</div>
-          <span>Active Businesses</span>
-          <strong>{activeBusinesses}</strong>
-          <small>Potential paid listings</small>
+          <div className="stat-icon">💰</div>
+          <span>Monthly Recurring Revenue</span>
+          <strong>
+            {(subscriptionStats?.mrr ?? 0).toLocaleString()} ETB
+          </strong>
+          <small>From active paid subscriptions</small>
         </div>
 
         <div className="admin-stat-card">
-          <div className="stat-icon">💼</div>
-          <span>Active Opportunities</span>
-          <strong>{activeOpportunities}</strong>
-          <small>Published listings</small>
-        </div>
-
-        <div className="admin-stat-card">
-          <div className="stat-icon">📝</div>
-          <span>Applications</span>
-          <strong>{applications.length}</strong>
-          <small>Total applications</small>
+          <div className="stat-icon">✅</div>
+          <span>Active Subscribers</span>
+          <strong>{subscriptionStats?.activeSubscribers ?? 0}</strong>
+          <small>Businesses on a paid or free plan</small>
         </div>
 
         <div className="admin-stat-card">
           <div className="stat-icon">⏳</div>
-          <span>Pending</span>
-          <strong>{pendingApplications}</strong>
-          <small>Applications awaiting review</small>
+          <span>Pending Payments</span>
+          <strong>{subscriptionStats?.pendingCount ?? 0}</strong>
+          <small>Awaiting your approval</small>
+        </div>
+
+        <div className="admin-stat-card">
+          <div className="stat-icon">🏢</div>
+          <span>Active Businesses</span>
+          <strong>{activeBusinesses}</strong>
+          <small>Listed on the platform</small>
         </div>
       </div>
 
       <div className="admin-section">
         <div className="section-heading">
           <div>
-            <p className="admin-eyebrow">FUTURE INCOME</p>
-            <h2>Monetization Plans</h2>
+            <p className="admin-eyebrow">ACTION NEEDED</p>
+            <h2>Pending Payment Approvals</h2>
+            <p>
+              Verify the Telebirr or bank transfer reference before
+              approving — this activates the business's plan.
+            </p>
           </div>
         </div>
 
-        <div className="admin-stats">
-          <div className="admin-stat-card">
-            <div className="stat-icon">⭐</div>
-            <span>Featured Business</span>
-            <strong>Coming</strong>
-            <small>
-              Businesses can pay to appear at the top.
-            </small>
-          </div>
+        {subscriptionsLoading && (
+          <div className="admin-loading">Loading subscriptions...</div>
+        )}
 
-          <div className="admin-stat-card">
-            <div className="stat-icon">🚀</div>
-            <span>Promoted Opportunity</span>
-            <strong>Coming</strong>
-            <small>
-              Organizations can promote opportunities.
-            </small>
-          </div>
+        {!subscriptionsLoading && pendingSubscriptions.length === 0 && (
+          <p className="admin-empty-note">
+            No pending payments right now. 🎉
+          </p>
+        )}
 
-          <div className="admin-stat-card">
-            <div className="stat-icon">💎</div>
-            <span>Premium Business</span>
-            <strong>Coming</strong>
-            <small>
-              Advanced business profiles and analytics.
-            </small>
+        {!subscriptionsLoading && pendingSubscriptions.length > 0 && (
+          <div className="admin-table-wrapper">
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>Business</th>
+                  <th>Owner</th>
+                  <th>Plan</th>
+                  <th>Amount</th>
+                  <th>Method</th>
+                  <th>Reference</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {pendingSubscriptions.map((sub) => (
+                  <tr key={sub._id}>
+                    <td>
+                      <strong>{sub.business?.name || "—"}</strong>
+                    </td>
+
+                    <td>
+                      {sub.owner?.name}
+                      <br />
+                      <small>{sub.owner?.email}</small>
+                    </td>
+
+                    <td>{sub.plan}</td>
+
+                    <td>{sub.amount} ETB</td>
+
+                    <td>{sub.paymentMethod}</td>
+
+                    <td>
+                      {sub.transactionReference || "—"}
+                      {sub.receiptUrl && (
+                        <>
+                          {" "}
+                          ·{" "}
+                          <a
+                            href={sub.receiptUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Receipt
+                          </a>
+                        </>
+                      )}
+                    </td>
+
+                    <td>
+                      <div className="opportunity-actions">
+                        <button
+                          className="status-button"
+                          disabled={
+                            processingSubscriptionId === sub._id
+                          }
+                          onClick={() =>
+                            handleApproveSubscription(sub)
+                          }
+                        >
+                          {processingSubscriptionId === sub._id
+                            ? "..."
+                            : "Approve"}
+                        </button>
+
+                        <button
+                          className="delete-user-button"
+                          disabled={
+                            processingSubscriptionId === sub._id
+                          }
+                          onClick={() =>
+                            handleRejectSubscription(sub)
+                          }
+                        >
+                          Reject
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
+        )}
+      </div>
+
+      <div className="admin-section">
+        <div className="section-heading">
+          <div>
+            <p className="admin-eyebrow">HISTORY</p>
+            <h2>All Subscription Activity</h2>
+          </div>
+        </div>
+
+        <div className="admin-table-wrapper">
+          <table className="admin-table">
+            <thead>
+              <tr>
+                <th>Business</th>
+                <th>Plan</th>
+                <th>Amount</th>
+                <th>Method</th>
+                <th>Status</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {subscriptions.map((sub) => (
+                <tr key={sub._id}>
+                  <td>{sub.business?.name || "—"}</td>
+                  <td>{sub.plan}</td>
+                  <td>{sub.amount} ETB</td>
+                  <td>{sub.paymentMethod}</td>
+                  <td>
+                    <span
+                      className={`status-badge ${
+                        sub.status === "active"
+                          ? "active-status"
+                          : "inactive-status"
+                      }`}
+                    >
+                      {sub.status}
+                    </span>
+                  </td>
+                  <td>
+                    {new Date(sub.createdAt).toLocaleDateString()}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </section>

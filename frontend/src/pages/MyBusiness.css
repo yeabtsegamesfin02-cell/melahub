@@ -1,0 +1,338 @@
+.mb-page {
+  min-height: 100vh;
+  background: #f7f9fc;
+  color: #111827;
+  padding-bottom: 60px;
+}
+
+.mb-loading {
+  padding: 120px 20px;
+  text-align: center;
+  font-size: 18px;
+  color: #64748b;
+}
+
+.mb-hero {
+  padding: 80px 20px 50px;
+  background: linear-gradient(135deg, #0f172a, #172554);
+  color: white;
+  text-align: center;
+}
+
+.mb-badge-tag {
+  display: inline-block;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  font-size: 14px;
+  margin-bottom: 18px;
+}
+
+.mb-hero h1 {
+  margin: 0 auto 14px;
+  max-width: 700px;
+  font-size: clamp(30px, 5vw, 48px);
+  letter-spacing: -1px;
+}
+
+.mb-hero p {
+  max-width: 600px;
+  margin: 0 auto;
+  color: #cbd5e1;
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+.mb-alert {
+  max-width: 900px;
+  margin: 20px auto 0;
+  padding: 14px 18px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 15px;
+}
+
+.mb-alert-error {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+.mb-alert-success {
+  background: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+.mb-alert button {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: inherit;
+}
+
+.mb-card {
+  max-width: 900px;
+  margin: 24px auto 0;
+  background: white;
+  border-radius: 18px;
+  padding: 28px 30px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+}
+
+.mb-card h2 {
+  margin: 0 0 6px;
+  font-size: 22px;
+}
+
+.mb-muted {
+  color: #64748b;
+  font-size: 14.5px;
+  margin: 0 0 18px;
+}
+
+.mb-eyebrow {
+  color: #2563eb;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 1px;
+  margin: 0 0 4px;
+}
+
+.mb-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.mb-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.mb-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.mb-form input,
+.mb-form select,
+.mb-form textarea {
+  padding: 11px 13px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  font-size: 14.5px;
+  font-family: inherit;
+}
+
+.mb-form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.mb-primary-button {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 12px 22px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.mb-primary-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.mb-secondary-button {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+  padding: 11px 20px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14.5px;
+}
+
+.mb-secondary-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.mb-status-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.mb-status-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.mb-plan-name {
+  font-size: 16px;
+}
+
+.mb-expiry {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.mb-featured-tag {
+  font-size: 13px;
+  color: #b45309;
+  font-weight: 700;
+}
+
+.mb-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.mb-badge-active {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.mb-badge-pending {
+  background: #fef9c3;
+  color: #92400e;
+}
+
+.mb-badge-expired {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.mb-badge-none {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.mb-plans-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
+}
+
+.mb-plan-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 22px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mb-plan-current {
+  border-color: #2563eb;
+  background: #f8faff;
+}
+
+.mb-plan-card h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.mb-plan-price {
+  font-size: 26px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.mb-plan-price span {
+  font-size: 13px;
+  font-weight: 500;
+  color: #64748b;
+}
+
+.mb-plan-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13.5px;
+  color: #475569;
+}
+
+.mb-pay-instructions {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 14px;
+  color: #475569;
+  margin: 0;
+}
+
+.mb-history-table-wrapper {
+  overflow-x: auto;
+}
+
+.mb-history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.mb-history-table th,
+.mb-history-table td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+body.dark-mode .mb-page {
+  background: #0b1120;
+  color: #e2e8f0;
+}
+
+body.dark-mode .mb-card {
+  background: #111827;
+  box-shadow: none;
+  border: 1px solid #1f2937;
+}
+
+body.dark-mode .mb-plan-card {
+  border-color: #1f2937;
+}
+
+body.dark-mode .mb-plan-current {
+  background: #0f172a;
+}
+
+body.dark-mode .mb-form input,
+body.dark-mode .mb-form select,
+body.dark-mode .mb-form textarea {
+  background: #0b1120;
+  border-color: #1f2937;
+  color: #e2e8f0;
+}
+
+body.dark-mode .mb-pay-instructions {
+  background: #0b1120;
+  border-color: #1f2937;
+}

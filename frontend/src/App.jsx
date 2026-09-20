@@ -13,6 +13,7 @@ import Dashboard from "./pages/Dashboard";
 import OpportunityDetails from "./pages/OpportunityDetails";
 import Admin from "./pages/Admin";
 import Businesses from "./pages/Businesses";
+import MyBusiness from "./pages/MyBusiness";
 
 function ThemeSync() {
   useEffect(() => {
@@ -105,6 +106,15 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/my-business"
+        element={
+          <ProtectedRoute>
+            <MyBusiness />
           </ProtectedRoute>
         }
       />

@@ -192,7 +192,7 @@ function Login() {
 
             <p>
               Don't have an account?{" "}
-              <Link to="/register">
+              <Link to="/signup">
                 Create one
               </Link>
             </p>

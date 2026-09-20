@@ -17,6 +17,7 @@ const opportunityRoutes = require("./routes/opportunityRoutes");
 const applicationRoutes = require("./routes/applicationRoutes");
 const adminRoutes = require("./routes/admin");
 const businessRoutes = require("./routes/businessRoutes");
+const subscriptionRoutes = require("./routes/subscriptionRoutes");
 const settingsRoutes = require("./routes/settingsRoutes");
 const savedOpportunityRoutes = require("./routes/savedOpportunityRoutes");
 
@@ -82,6 +83,9 @@ app.use("/api/admin", adminRoutes);
 // Businesses
 app.use("/api/businesses", businessRoutes);
 
+// Subscriptions (monetization)
+app.use("/api/subscriptions", subscriptionRoutes);
+
 // Settings
 app.use("/api/settings", settingsRoutes);
 
@@ -139,6 +143,7 @@ const startServer = async () => {
       console.log("📝 Applications API: Ready");
       console.log("🛡️ Admin API: Ready");
       console.log("🏢 Businesses API: Ready");
+      console.log("💳 Subscriptions API: Ready");
       console.log("⚙️ Settings API: Ready");
       console.log("⭐ Saved Opportunities API: Ready");
       console.log("=====================================");
